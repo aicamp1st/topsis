@@ -1,12 +1,9 @@
 <script lang="ts">
-  import { enhance } from '$app/forms'
   import Modal from '$lib/components/Modal.svelte'
   import Toast from '$lib/components/Toast.svelte'
-  import type { Criteria } from '$lib/server/db/schema'
+  import { store } from '$lib/store.svelte'
+  import type { Criteria } from '$lib/types'
   import { Edit2, Info, Plus, Trash2 } from '@lucide/svelte'
-  import type { ActionData, PageData } from './$types'
-
-  let { data, form }: { data: PageData; form: ActionData } = $props()
 
   let showCreate = $state(false)
   let showEdit = $state(false)
@@ -16,34 +13,86 @@
   let toastMsg = $state('')
   let toastType = $state<'success' | 'error'>('success')
   let showToast = $state(false)
+  let formError = $state('')
 
-  $effect(() => {
-    if (form?.success) {
-      const msgs: Record<string, string> = {
-        create: 'Kriteria berhasil ditambahkan',
-        update: 'Kriteria berhasil diperbarui',
-        delete: 'Kriteria berhasil dihapus',
-      }
-      toastMsg = msgs[form.action ?? ''] ?? 'Berhasil'
-      toastType = 'success'
-      showToast = true
-      showCreate = false
-      showEdit = false
-      showDelete = false
+  // Form fields
+  let fName = $state('')
+  let fDesc = $state('')
+  let fWeight = $state<number | string>('')
+  let fType = $state<'benefit' | 'cost'>('benefit')
+
+  const totalWeight = $derived(store.totalWeight)
+  const weightPercent = $derived(Math.round(totalWeight * 100))
+
+  function toast(msg: string, type: 'success' | 'error' = 'success') {
+    toastMsg = msg
+    toastType = type
+    showToast = true
+  }
+
+  function validate(): boolean {
+    formError = ''
+    if (!fName.trim()) {
+      formError = 'Nama kriteria wajib diisi'
+      return false
     }
-  })
+    const w = parseFloat(String(fWeight))
+    if (isNaN(w) || w <= 0 || w > 1) {
+      formError = 'Bobot harus antara 0 dan 1'
+      return false
+    }
+    return true
+  }
+
+  function openCreate() {
+    fName = ''
+    fDesc = ''
+    fWeight = ''
+    fType = 'benefit'
+    formError = ''
+    showCreate = true
+  }
 
   function openEdit(c: Criteria) {
-    editTarget = { ...c }
+    editTarget = c
+    fName = c.name
+    fDesc = c.description
+    fWeight = c.weight
+    fType = c.type
+    formError = ''
     showEdit = true
   }
 
-  function openDelete(c: Criteria) {
-    deleteTarget = c
-    showDelete = true
+  function submitCreate() {
+    if (!validate()) return
+    store.addCriteria({
+      name: fName.trim(),
+      description: fDesc.trim(),
+      weight: parseFloat(String(fWeight)),
+      type: fType,
+    })
+    showCreate = false
+    toast('Kriteria berhasil ditambahkan')
   }
 
-  const weightPercent = $derived(Math.round(data.totalWeight * 100))
+  function submitEdit() {
+    if (!validate() || !editTarget) return
+    store.updateCriteria(editTarget.id, {
+      name: fName.trim(),
+      description: fDesc.trim(),
+      weight: parseFloat(String(fWeight)),
+      type: fType,
+    })
+    showEdit = false
+    toast('Kriteria berhasil diperbarui')
+  }
+
+  function confirmDelete() {
+    if (!deleteTarget) return
+    store.deleteCriteria(deleteTarget.id)
+    showDelete = false
+    toast('Kriteria berhasil dihapus')
+  }
 </script>
 
 <Toast bind:show={showToast} message={toastMsg} type={toastType} />
@@ -54,7 +103,7 @@
       <h1 class="text-2xl font-bold text-slate-900">Kriteria Penilaian</h1>
       <p class="text-slate-500 text-sm mt-1">Kelola kriteria beserta bobot dan tipe penilaian</p>
     </div>
-    <button onclick={() => (showCreate = true)} class="btn-primary">
+    <button onclick={openCreate} class="btn-primary">
       <Plus size={16} />
       Tambah Kriteria
     </button>
@@ -67,25 +116,25 @@
         <Info size={15} class="text-slate-400" />
         <span class="text-sm font-medium text-slate-600">Total Bobot</span>
       </div>
-      <span class="text-sm font-bold {data.totalWeight === 1 ? 'text-emerald-600' : 'text-amber-600'}">
-        {data.totalWeight} / 1.00
-        {#if data.totalWeight === 1}✓{:else}⚠{/if}
+      <span class="text-sm font-bold {totalWeight === 1 ? 'text-emerald-600' : 'text-amber-600'}">
+        {totalWeight} / 1.00
+        {#if totalWeight === 1}✓{:else}⚠{/if}
       </span>
     </div>
     <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
       <div
-        class="h-full rounded-full transition-all {data.totalWeight > 1 ? 'bg-rose-500' : data.totalWeight === 1 ? 'bg-emerald-500' : 'bg-amber-400'}"
+        class="h-full rounded-full transition-all {totalWeight > 1 ? 'bg-rose-500' : totalWeight === 1 ? 'bg-emerald-500' : 'bg-amber-400'}"
         style="width: {Math.min(weightPercent, 100)}%"
       ></div>
     </div>
-    {#if data.totalWeight !== 1}
+    {#if totalWeight !== 1}
       <p class="text-xs text-amber-600 mt-2">Total bobot harus tepat 1.00 agar kalkulasi TOPSIS valid.</p>
     {/if}
   </div>
 
   <!-- Table -->
   <div class="card overflow-hidden">
-    {#if data.criteria.length === 0}
+    {#if store.criteria.length === 0}
       <div class="py-16 text-center">
         <p class="text-slate-400 text-sm">Belum ada kriteria. Tambah kriteria terlebih dahulu.</p>
       </div>
@@ -102,7 +151,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each data.criteria as c, i}
+          {#each store.criteria as c, i}
             <tr>
               <td class="text-slate-400 font-mono text-xs">{i + 1}</td>
               <td class="font-medium text-slate-900">{c.name}</td>
@@ -129,7 +178,7 @@
                   <button onclick={() => openEdit(c)} class="btn-ghost p-1.5 rounded-lg text-slate-400 hover:text-slate-700">
                     <Edit2 size={15} />
                   </button>
-                  <button onclick={() => openDelete(c)} class="btn-ghost p-1.5 rounded-lg text-slate-400 hover:text-rose-600">
+                  <button onclick={() => { deleteTarget = c; showDelete = true }} class="btn-ghost p-1.5 rounded-lg text-slate-400 hover:text-rose-600">
                     <Trash2 size={15} />
                   </button>
                 </div>
@@ -144,30 +193,30 @@
 
 <!-- Create Modal -->
 <Modal bind:open={showCreate} title="Tambah Kriteria">
-  <form method="POST" action="?/create" use:enhance class="space-y-4">
+  <form onsubmit={(e) => { e.preventDefault(); submitCreate() }} class="space-y-4">
     <div>
       <label class="label" for="create-name">Nama Kriteria</label>
-      <input id="create-name" name="name" class="input" placeholder="cth. Prestasi Kerja" required />
+      <input id="create-name" bind:value={fName} class="input" placeholder="cth. Prestasi Kerja" required />
     </div>
     <div>
       <label class="label" for="create-desc">Deskripsi (opsional)</label>
-      <input id="create-desc" name="description" class="input" placeholder="Penjelasan singkat kriteria" />
+      <input id="create-desc" bind:value={fDesc} class="input" placeholder="Penjelasan singkat kriteria" />
     </div>
     <div class="grid grid-cols-2 gap-3">
       <div>
         <label class="label" for="create-weight">Bobot (0–1)</label>
-        <input id="create-weight" name="weight" type="number" step="0.01" min="0.01" max="1" class="input" placeholder="0.25" required />
+        <input id="create-weight" bind:value={fWeight} type="number" step="0.01" min="0.01" max="1" class="input" placeholder="0.25" required />
       </div>
       <div>
         <label class="label" for="create-type">Tipe</label>
-        <select id="create-type" name="type" class="input">
+        <select id="create-type" bind:value={fType} class="input">
           <option value="benefit">↑ Benefit</option>
           <option value="cost">↓ Cost</option>
         </select>
       </div>
     </div>
-    {#if form?.error}
-      <p class="text-sm text-rose-600">{form.error}</p>
+    {#if formError}
+      <p class="text-sm text-rose-600">{formError}</p>
     {/if}
     <div class="flex justify-end gap-2 pt-2">
       <button type="button" onclick={() => (showCreate = false)} class="btn-secondary">Batal</button>
@@ -177,41 +226,38 @@
 </Modal>
 
 <!-- Edit Modal -->
-{#if editTarget}
-  <Modal bind:open={showEdit} title="Edit Kriteria">
-    <form method="POST" action="?/update" use:enhance class="space-y-4">
-      <input type="hidden" name="id" value={editTarget.id} />
+<Modal bind:open={showEdit} title="Edit Kriteria">
+  <form onsubmit={(e) => { e.preventDefault(); submitEdit() }} class="space-y-4">
+    <div>
+      <label class="label" for="edit-name">Nama Kriteria</label>
+      <input id="edit-name" bind:value={fName} class="input" required />
+    </div>
+    <div>
+      <label class="label" for="edit-desc">Deskripsi</label>
+      <input id="edit-desc" bind:value={fDesc} class="input" />
+    </div>
+    <div class="grid grid-cols-2 gap-3">
       <div>
-        <label class="label" for="edit-name">Nama Kriteria</label>
-        <input id="edit-name" name="name" class="input" value={editTarget.name} required />
+        <label class="label" for="edit-weight">Bobot</label>
+        <input id="edit-weight" bind:value={fWeight} type="number" step="0.01" min="0.01" max="1" class="input" required />
       </div>
       <div>
-        <label class="label" for="edit-desc">Deskripsi</label>
-        <input id="edit-desc" name="description" class="input" value={editTarget.description ?? ''} />
+        <label class="label" for="edit-type">Tipe</label>
+        <select id="edit-type" bind:value={fType} class="input">
+          <option value="benefit">↑ Benefit</option>
+          <option value="cost">↓ Cost</option>
+        </select>
       </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="label" for="edit-weight">Bobot</label>
-          <input id="edit-weight" name="weight" type="number" step="0.01" min="0.01" max="1" class="input" value={editTarget.weight} required />
-        </div>
-        <div>
-          <label class="label" for="edit-type">Tipe</label>
-          <select id="edit-type" name="type" class="input">
-            <option value="benefit" selected={editTarget.type === 'benefit'}>↑ Benefit</option>
-            <option value="cost" selected={editTarget.type === 'cost'}>↓ Cost</option>
-          </select>
-        </div>
-      </div>
-      {#if form?.error}
-        <p class="text-sm text-rose-600">{form.error}</p>
-      {/if}
-      <div class="flex justify-end gap-2 pt-2">
-        <button type="button" onclick={() => (showEdit = false)} class="btn-secondary">Batal</button>
-        <button type="submit" class="btn-primary">Perbarui</button>
-      </div>
-    </form>
-  </Modal>
-{/if}
+    </div>
+    {#if formError}
+      <p class="text-sm text-rose-600">{formError}</p>
+    {/if}
+    <div class="flex justify-end gap-2 pt-2">
+      <button type="button" onclick={() => (showEdit = false)} class="btn-secondary">Batal</button>
+      <button type="submit" class="btn-primary">Perbarui</button>
+    </div>
+  </form>
+</Modal>
 
 <!-- Delete Modal -->
 {#if deleteTarget}
@@ -219,12 +265,9 @@
     <p class="text-sm text-slate-600 mb-4">
       Yakin ingin menghapus kriteria <strong>{deleteTarget.name}</strong>? Semua data penilaian terkait akan ikut terhapus.
     </p>
-    <form method="POST" action="?/delete" use:enhance>
-      <input type="hidden" name="id" value={deleteTarget.id} />
-      <div class="flex justify-end gap-2">
-        <button type="button" onclick={() => (showDelete = false)} class="btn-secondary">Batal</button>
-        <button type="submit" class="btn-danger">Hapus</button>
-      </div>
-    </form>
+    <div class="flex justify-end gap-2">
+      <button type="button" onclick={() => (showDelete = false)} class="btn-secondary">Batal</button>
+      <button type="button" onclick={confirmDelete} class="btn-danger">Hapus</button>
+    </div>
   </Modal>
 {/if}

@@ -2,15 +2,17 @@
 
 Sistem Pendukung Keputusan Pemilihan Karyawan Terbaik menggunakan metode **TOPSIS** (Technique for Order of Preference by Similarity to Ideal Solution).
 
+> Aplikasi **100% client-side** — semua data tersimpan di **localStorage browser**, tanpa server & tanpa database. Cocok di-host gratis di **GitHub Pages**.
+
 ## Stack
 
 | Layer | Teknologi |
 |-------|-----------|
-| Frontend + Backend | SvelteKit 5 (Runes API) |
-| Database | libSQL / SQLite via Drizzle ORM (lokal: file, produksi: Turso) |
+| Framework | SvelteKit 5 (Runes API), SPA / static |
+| Penyimpanan | localStorage browser (reactive store) |
 | CSS | Tailwind CSS v4 |
 | Icons | @lucide/svelte |
-| Runtime | Node.js / Vercel |
+| Hosting | GitHub Pages (static) |
 
 ## Fitur
 
@@ -29,66 +31,43 @@ Sistem Pendukung Keputusan Pemilihan Karyawan Terbaik menggunakan metode **TOPSI
 6. Koefisien kedekatan: `Ci = D⁻ / (D⁺ + D⁻)`
 7. Peringkat berdasarkan Ci tertinggi
 
+Logika ada di [`src/lib/topsis.ts`](src/lib/topsis.ts), dijalankan langsung di browser.
+
 ## Pengembangan Lokal
 
 ```bash
 npm install
-npm run db:seed   # isi data contoh ke file:local.db
 npm run dev       # buka http://localhost:5173
 ```
 
-## Deploy ke Production (Vercel + Turso) — Gratis
+Data contoh otomatis dimuat ke localStorage saat pertama kali dibuka.
 
-### 1. Buat database Turso (gratis, tanpa kartu kredit)
+## Deploy ke GitHub Pages (gratis, otomatis)
 
-```bash
-# Install Turso CLI
-curl -sSfL https://get.tur.so/install.sh | bash
+Sudah ada GitHub Actions workflow di [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) yang otomatis build & deploy tiap kali push ke `main`.
 
-# Login (buka browser, login pakai GitHub)
-turso auth login
+**Langkah sekali setup:**
 
-# Buat database
-turso db create topsis
+1. Push repo ini ke GitHub (branch `main`).
+2. Buka **Settings → Pages** di repo GitHub.
+3. Pada **Build and deployment → Source**, pilih **GitHub Actions**.
+4. Tunggu workflow selesai (tab **Actions**). Situs live di:
+   `https://<username>.github.io/topsis/`
 
-# Ambil URL database  -> simpan sebagai DATABASE_URL
-turso db show topsis --url
+> **Catatan base path:** repo bernama `topsis`, jadi situs disajikan di sub-path `/topsis/`.
+> Base path sudah diatur otomatis di [`svelte.config.js`](svelte.config.js) (`/topsis` saat build production).
+> Jika nama repo diubah, sesuaikan nilai `base` di file tersebut.
 
-# Buat auth token   -> simpan sebagai DATABASE_AUTH_TOKEN
-turso db tokens create topsis
-```
-
-### 2. Set environment variables di Vercel
-
-Di dashboard Vercel project → **Settings → Environment Variables**, tambahkan:
-
-| Key | Value |
-|-----|-------|
-| `DATABASE_URL` | `libsql://topsis-xxxx.turso.io` (dari langkah 1) |
-| `DATABASE_AUTH_TOKEN` | token dari langkah 1 |
-
-### 3. Deploy
-
-- Import repo GitHub ini ke [vercel.com/new](https://vercel.com/new)
-- Framework otomatis terdeteksi sebagai **SvelteKit**
-- Klik **Deploy**
-
-Tabel database otomatis dibuat saat request pertama (lihat `src/hooks.server.ts` → `ensureSchema()`).
-
-### 4. (Opsional) Isi data awal ke Turso
+## Build manual
 
 ```bash
-# Set env lokal ke Turso lalu seed sekali
-DATABASE_URL="libsql://topsis-xxxx.turso.io" \
-DATABASE_AUTH_TOKEN="<token>" \
-npm run db:seed
+npm run build     # hasil ada di folder build/
+npm run preview   # preview hasil build di http://localhost:4173/topsis
 ```
 
-## Database Schema (Drizzle)
+## Catatan penyimpanan data
 
-Migrasi ada di `drizzle/`. Untuk apply manual ke Turso:
-
-```bash
-npm run db:push     # sinkronkan schema ke DATABASE_URL aktif
-npm run db:studio   # buka Drizzle Studio (GUI database)
-```
+Data (kriteria, karyawan, penilaian) disimpan di **localStorage** per-browser:
+- Data **tidak ikut berpindah** antar perangkat / browser.
+- Menghapus data browser akan mereset aplikasi ke data contoh.
+- Cocok untuk demo, tugas kuliah, dan penggunaan single-user.

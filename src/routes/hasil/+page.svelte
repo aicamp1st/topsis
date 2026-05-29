@@ -1,9 +1,9 @@
 <script lang="ts">
+  import { store } from '$lib/store.svelte'
   import { closenessLabel, departmentColor, fmt, initials, rankMedal } from '$lib/utils'
   import { AlertCircle, ChevronDown, ChevronUp, Trophy } from '@lucide/svelte'
-  import type { PageData } from './$types'
 
-  let { data }: { data: PageData } = $props()
+  const computed = $derived(store.compute())
 
   let activeStep = $state<number | null>(null)
 
@@ -26,14 +26,14 @@
     <p class="text-slate-500 text-sm mt-1">Peringkat karyawan terbaik berdasarkan metode TOPSIS</p>
   </div>
 
-  {#if !data.ready}
+  {#if !computed.ready}
     <div class="card p-8 text-center">
       <AlertCircle size={32} class="text-amber-400 mx-auto mb-3" />
-      <p class="text-slate-600 font-medium">{data.message}</p>
+      <p class="text-slate-600 font-medium">{computed.message}</p>
       <p class="text-slate-400 text-sm mt-1">Lengkapi data sebelum menghitung TOPSIS.</p>
     </div>
-  {:else if data.result}
-    {@const { results, steps, criteriaLabels, candidateLabels } = data.result}
+  {:else if computed.result}
+    {@const { results, steps, criteriaLabels, candidateLabels } = computed.result}
 
     <!-- Top 3 Podium -->
     <div class="grid grid-cols-3 gap-4 mb-6">

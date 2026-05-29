@@ -1,8 +1,10 @@
 <script lang="ts">
+  import { base } from '$app/paths'
+  import { store } from '$lib/store.svelte'
   import { BarChart3, ClipboardList, LayoutGrid, Trophy, Users } from '@lucide/svelte'
-  import type { PageData } from './$types'
 
-  let { data }: { data: PageData } = $props()
+  const totalWeight = $derived(store.totalWeight)
+  const topResult = $derived(store.topResult())
 
   const steps = [
     {
@@ -56,10 +58,10 @@
           <LayoutGrid size={15} class="text-violet-600" />
         </div>
       </div>
-      <p class="text-3xl font-bold text-slate-900">{data.stats.totalCriteria}</p>
+      <p class="text-3xl font-bold text-slate-900">{store.criteria.length}</p>
       <p class="text-xs text-slate-400 mt-1">
-        Bobot total: <span class="{data.stats.totalWeight === 1 ? 'text-emerald-600' : 'text-amber-600'} font-medium">
-          {data.stats.totalWeight}
+        Bobot total: <span class="{totalWeight === 1 ? 'text-emerald-600' : 'text-amber-600'} font-medium">
+          {totalWeight}
         </span>
       </p>
     </div>
@@ -71,7 +73,7 @@
           <Users size={15} class="text-blue-600" />
         </div>
       </div>
-      <p class="text-3xl font-bold text-slate-900">{data.stats.totalCandidates}</p>
+      <p class="text-3xl font-bold text-slate-900">{store.candidates.length}</p>
       <p class="text-xs text-slate-400 mt-1">Kandidat terdaftar</p>
     </div>
 
@@ -82,11 +84,11 @@
           <ClipboardList size={15} class="text-amber-600" />
         </div>
       </div>
-      <p class="text-3xl font-bold text-slate-900">{data.stats.completeness}%</p>
+      <p class="text-3xl font-bold text-slate-900">{store.completeness}%</p>
       <div class="mt-2 h-1.5 bg-slate-100 rounded-full overflow-hidden">
         <div
-          class="h-full rounded-full transition-all {data.stats.completeness === 100 ? 'bg-emerald-500' : 'bg-amber-500'}"
-          style="width: {data.stats.completeness}%"
+          class="h-full rounded-full transition-all {store.completeness === 100 ? 'bg-emerald-500' : 'bg-amber-500'}"
+          style="width: {store.completeness}%"
         ></div>
       </div>
     </div>
@@ -98,10 +100,10 @@
           <Trophy size={15} class="text-emerald-600" />
         </div>
       </div>
-      {#if data.topResult}
-        <p class="text-base font-bold text-slate-900 truncate">{data.topResult.name}</p>
+      {#if topResult}
+        <p class="text-base font-bold text-slate-900 truncate">{topResult.name}</p>
         <p class="text-xs text-slate-400 mt-1">
-          Skor: <span class="text-emerald-600 font-semibold">{(data.topResult.closeness * 100).toFixed(1)}%</span>
+          Skor: <span class="text-emerald-600 font-semibold">{(topResult.closeness * 100).toFixed(1)}%</span>
         </p>
       {:else}
         <p class="text-sm text-slate-400">Belum ada data</p>
@@ -120,16 +122,14 @@
     </div>
     <div class="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {#each steps as step}
+        {@const Icon = step.icon}
         <a
-          href={step.href}
+          href="{base}{step.href}"
           class="group relative p-4 rounded-xl border border-slate-100 hover:border-primary-200 hover:bg-primary-50/30 transition-all duration-200"
         >
           <div class="flex items-start gap-3">
             <div class="w-9 h-9 rounded-lg {step.color} flex items-center justify-center flex-shrink-0">
-              {#if step.icon}
-                {@const Icon = step.icon}
-                <Icon size={17} />
-              {/if}
+              <Icon size={17} />
             </div>
             <div class="min-w-0">
               <span class="text-xs font-bold text-slate-300">STEP {step.num}</span>

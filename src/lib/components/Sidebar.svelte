@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores'
+  import { base } from '$app/paths'
   import { BarChart3, ClipboardList, Home, LayoutGrid, Trophy, Users } from '@lucide/svelte'
 
   const nav = [
@@ -9,6 +10,9 @@
     { href: '/penilaian', label: 'Penilaian', icon: ClipboardList },
     { href: '/hasil', label: 'Hasil TOPSIS', icon: Trophy },
   ]
+
+  // Path saat ini tanpa base, supaya cocok dengan item.href
+  const current = $derived(($page.url.pathname.replace(base, '') || '/'))
 </script>
 
 <aside class="fixed inset-y-0 left-0 w-64 bg-slate-900 flex flex-col z-40">
@@ -28,15 +32,16 @@
   <!-- Navigation -->
   <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
     {#each nav as item}
-      {@const active = $page.url.pathname === item.href || ($page.url.pathname.startsWith(item.href) && item.href !== '/')}
+      {@const active = current === item.href || (item.href !== '/' && current.startsWith(item.href))}
+      {@const Icon = item.icon}
       <a
-        href={item.href}
+        href="{base}{item.href}"
         class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
           {active
             ? 'bg-primary-600 text-white shadow-sm'
             : 'text-slate-400 hover:bg-slate-800 hover:text-white'}"
       >
-        <svelte:component this={item.icon} size={17} />
+        <Icon size={17} />
         {item.label}
       </a>
     {/each}
