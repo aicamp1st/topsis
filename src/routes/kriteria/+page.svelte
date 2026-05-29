@@ -100,8 +100,9 @@
 <div class="p-8">
   <div class="flex items-center justify-between mb-8">
     <div>
-      <h1 class="text-2xl font-bold text-slate-900">Kriteria Penilaian</h1>
-      <p class="text-slate-500 text-sm mt-1">Kelola kriteria beserta bobot dan tipe penilaian</p>
+      <span class="eyebrow">Langkah 01</span>
+      <h1 class="text-3xl font-semibold text-slate-900 mt-1.5">Kriteria Penilaian</h1>
+      <p class="text-slate-500 text-sm mt-1.5">Kelola kriteria beserta bobot dan tipe penilaian</p>
     </div>
     <button onclick={openCreate} class="btn-primary">
       <Plus size={16} />

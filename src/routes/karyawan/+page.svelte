@@ -98,8 +98,9 @@
 <div class="p-8">
   <div class="flex items-center justify-between mb-8">
     <div>
-      <h1 class="text-2xl font-bold text-slate-900">Data Karyawan</h1>
-      <p class="text-slate-500 text-sm mt-1">Kelola kandidat karyawan yang akan dinilai</p>
+      <span class="eyebrow">Langkah 02</span>
+      <h1 class="text-3xl font-semibold text-slate-900 mt-1.5">Data Karyawan</h1>
+      <p class="text-slate-500 text-sm mt-1.5">Kelola kandidat karyawan yang akan dinilai</p>
     </div>
     <button onclick={openCreate} class="btn-primary">
       <Plus size={16} />
@@ -117,7 +118,7 @@
       {#each store.candidates as c}
         <div class="card p-5 hover:shadow-md transition-shadow">
           <div class="flex items-start gap-4">
-            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-primary-500 to-violet-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-sm">
+            <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-sm">
               {initials(c.name)}
             </div>
             <div class="flex-1 min-w-0">

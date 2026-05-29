@@ -33,10 +33,10 @@
 
   function cellColor(val: number): string {
     if (val === 0) return 'bg-slate-50 text-slate-300'
-    if (val >= 8) return 'bg-emerald-50'
-    if (val >= 6) return 'bg-blue-50'
-    if (val >= 4) return 'bg-amber-50'
-    return 'bg-rose-50'
+    if (val >= 8) return 'bg-olive-100'
+    if (val >= 6) return 'bg-honey-100'
+    if (val >= 4) return 'bg-primary-100/60'
+    return 'bg-rose-100'
   }
 </script>
 
@@ -45,8 +45,9 @@
 <div class="p-8">
   <div class="flex items-center justify-between mb-8">
     <div>
-      <h1 class="text-2xl font-bold text-slate-900">Matriks Penilaian</h1>
-      <p class="text-slate-500 text-sm mt-1">Berikan nilai 1–10 untuk setiap karyawan pada setiap kriteria</p>
+      <span class="eyebrow">Langkah 03</span>
+      <h1 class="text-3xl font-semibold text-slate-900 mt-1.5">Matriks Penilaian</h1>
+      <p class="text-slate-500 text-sm mt-1.5">Berikan nilai 1–10 untuk setiap karyawan pada setiap kriteria</p>
     </div>
   </div>
 
@@ -84,7 +85,7 @@
               <tr class="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
                 <td class="px-4 py-3 sticky left-0 bg-white">
                   <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-violet-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                       {initials(c.name)}
                     </div>
                     <div>
@@ -117,7 +118,7 @@
     <!-- Legend -->
     <div class="flex items-center gap-4 mb-4 text-xs text-slate-500">
       <span class="font-medium">Keterangan nilai:</span>
-      {#each [['0', 'bg-slate-100', 'Belum diisi'], ['1–3', 'bg-rose-100', 'Kurang'], ['4–5', 'bg-amber-100', 'Cukup'], ['6–7', 'bg-blue-100', 'Baik'], ['8–10', 'bg-emerald-100', 'Sangat Baik']] as [range, cls, label]}
+      {#each [['0', 'bg-slate-200', 'Belum diisi'], ['1–3', 'bg-rose-100', 'Kurang'], ['4–5', 'bg-primary-100', 'Cukup'], ['6–7', 'bg-honey-200', 'Baik'], ['8–10', 'bg-olive-200', 'Sangat Baik']] as [range, cls, label]}
         <span class="flex items-center gap-1">
           <span class="inline-block w-3 h-3 rounded {cls}"></span>
           {range} ({label})

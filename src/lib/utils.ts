@@ -16,14 +16,16 @@ export function initials(name: string): string {
 }
 
 export function departmentColor(dept: string): string {
+  // Palet earthy hangat — variasi tetap koheren, bukan "pelangi"
   const colors: Record<string, string> = {
-    Keuangan: 'bg-emerald-100 text-emerald-700',
-    Pemasaran: 'bg-blue-100 text-blue-700',
-    Teknologi: 'bg-violet-100 text-violet-700',
-    SDM: 'bg-amber-100 text-amber-700',
-    Operasional: 'bg-rose-100 text-rose-700',
+    Keuangan: 'bg-olive-100 text-olive-700',
+    Pemasaran: 'bg-primary-100 text-primary-700',
+    Teknologi: 'bg-honey-100 text-[#8a5a12]',
+    SDM: 'bg-slate-200 text-slate-700',
+    Operasional: 'bg-rose-100 text-rose-600',
+    Produksi: 'bg-olive-200 text-olive-800',
   }
-  return colors[dept] ?? 'bg-slate-100 text-slate-700'
+  return colors[dept] ?? 'bg-slate-100 text-slate-600'
 }
 
 export function rankMedal(rank: number): string {
@@ -32,8 +34,8 @@ export function rankMedal(rank: number): string {
 }
 
 export function closenessLabel(c: number): { label: string; class: string } {
-  if (c >= 0.7) return { label: 'Sangat Baik', class: 'bg-emerald-100 text-emerald-700' }
-  if (c >= 0.5) return { label: 'Baik', class: 'bg-blue-100 text-blue-700' }
-  if (c >= 0.3) return { label: 'Cukup', class: 'bg-amber-100 text-amber-700' }
-  return { label: 'Kurang', class: 'bg-rose-100 text-rose-700' }
+  if (c >= 0.7) return { label: 'Sangat Baik', class: 'bg-olive-100 text-olive-700' }
+  if (c >= 0.5) return { label: 'Baik', class: 'bg-primary-100 text-primary-700' }
+  if (c >= 0.3) return { label: 'Cukup', class: 'bg-honey-100 text-[#8a5a12]' }
+  return { label: 'Kurang', class: 'bg-rose-100 text-rose-600' }
 }

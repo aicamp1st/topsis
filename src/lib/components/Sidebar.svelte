@@ -1,55 +1,66 @@
 <script lang="ts">
   import { page } from '$app/stores'
   import { base } from '$app/paths'
-  import { BarChart3, ClipboardList, Home, LayoutGrid, Trophy, Users } from '@lucide/svelte'
+  import { ClipboardList, LayoutGrid, LayoutDashboard, Trophy, Users } from '@lucide/svelte'
 
   const nav = [
-    { href: '/', label: 'Dashboard', icon: Home },
+    { href: '/', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/kriteria', label: 'Kriteria', icon: LayoutGrid },
     { href: '/karyawan', label: 'Karyawan', icon: Users },
     { href: '/penilaian', label: 'Penilaian', icon: ClipboardList },
     { href: '/hasil', label: 'Hasil TOPSIS', icon: Trophy },
   ]
 
-  // Path saat ini tanpa base, supaya cocok dengan item.href
   const current = $derived(($page.url.pathname.replace(base, '') || '/'))
 </script>
 
-<aside class="fixed inset-y-0 left-0 w-64 bg-slate-900 flex flex-col z-40">
+<aside class="fixed inset-y-0 left-0 w-64 flex flex-col z-40 bg-slate-900 text-slate-100">
+  <!-- tekstur halus -->
+  <div
+    class="absolute inset-0 opacity-[0.35] pointer-events-none"
+    style="background-image: radial-gradient(at 70% 0%, rgba(194,95,55,0.25) 0px, transparent 50%), radial-gradient(at 0% 100%, rgba(133,145,57,0.18) 0px, transparent 45%);"
+  ></div>
+
   <!-- Brand -->
-  <div class="px-6 py-5 border-b border-slate-800">
+  <div class="relative px-6 pt-7 pb-6">
     <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-xl bg-primary-600 flex items-center justify-center shadow-lg">
-        <BarChart3 size={18} class="text-white" />
+      <div class="w-10 h-10 rounded-2xl bg-primary-500 flex items-center justify-center shadow-lg shadow-primary-900/40 rotate-3">
+        <span class="font-display font-semibold text-white text-lg leading-none">T</span>
       </div>
       <div>
-        <p class="text-white font-semibold text-sm leading-tight">SPK TOPSIS</p>
-        <p class="text-slate-400 text-xs">Karyawan Terbaik</p>
+        <p class="font-display font-semibold text-[15px] leading-tight text-white">SPK&middot;TOPSIS</p>
+        <p class="text-slate-400 text-[11px] tracking-wide">Karyawan Terbaik</p>
       </div>
     </div>
   </div>
 
   <!-- Navigation -->
-  <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+  <nav class="relative flex-1 px-3 py-2 space-y-1 overflow-y-auto">
+    <p class="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-slate-500">Menu</p>
     {#each nav as item}
       {@const active = current === item.href || (item.href !== '/' && current.startsWith(item.href))}
       {@const Icon = item.icon}
       <a
         href="{base}{item.href}"
-        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150
+        class="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200
           {active
-            ? 'bg-primary-600 text-white shadow-sm'
-            : 'text-slate-400 hover:bg-slate-800 hover:text-white'}"
+            ? 'bg-primary-500/90 text-white shadow-md shadow-primary-900/30'
+            : 'text-slate-400 hover:bg-white/5 hover:text-white'}"
       >
-        <Icon size={17} />
+        {#if active}
+          <span class="absolute -left-3 top-1/2 -translate-y-1/2 h-5 w-1 rounded-full bg-honey-300"></span>
+        {/if}
+        <Icon size={17} class={active ? 'text-white' : 'text-slate-500 group-hover:text-honey-300 transition-colors'} />
         {item.label}
       </a>
     {/each}
   </nav>
 
   <!-- Footer -->
-  <div class="px-4 py-4 border-t border-slate-800">
-    <p class="text-slate-500 text-xs text-center">Metode TOPSIS</p>
-    <p class="text-slate-600 text-xs text-center">Multi-Criteria Decision Making</p>
+  <div class="relative px-5 py-5 border-t border-white/5">
+    <div class="rounded-xl bg-white/5 px-3.5 py-3">
+      <p class="text-slate-300 text-xs font-medium">Metode TOPSIS</p>
+      <p class="text-slate-500 text-[11px] mt-0.5 leading-snug">Multi-Criteria Decision Making</p>
+    </div>
   </div>
 </aside>
