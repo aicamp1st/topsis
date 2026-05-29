@@ -1,0 +1,15 @@
+node_modules/
+.svelte-kit/
+build/
+dist/
+.vercel/
+
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+
+.env
+.env.local
+
+drizzle/meta/
