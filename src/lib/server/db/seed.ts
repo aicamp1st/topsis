@@ -1,5 +1,7 @@
-import { db } from './index'
+import { db, ensureSchema } from './index'
 import { assessments, candidates, criteria } from './schema'
+
+await ensureSchema()
 
 await db.delete(assessments)
 await db.delete(candidates)

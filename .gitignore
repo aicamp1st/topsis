@@ -11,5 +11,3 @@ dist/
 
 .env
 .env.local
-
-drizzle/meta/

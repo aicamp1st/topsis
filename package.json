@@ -18,6 +18,7 @@
     "@sveltejs/kit": "^2.7.0",
     "@sveltejs/vite-plugin-svelte": "^5.0.0",
     "@tailwindcss/vite": "^4.0.0",
+    "@types/node": "^25.9.1",
     "drizzle-kit": "^0.28.0",
     "svelte": "^5.0.0",
     "svelte-check": "^4.0.0",
@@ -27,9 +28,8 @@
     "vite": "^6.0.0"
   },
   "dependencies": {
+    "@libsql/client": "^0.17.3",
     "@lucide/svelte": "^1.17.0",
-    "@types/better-sqlite3": "^7.6.0",
-    "better-sqlite3": "^11.0.0",
     "drizzle-orm": "^0.38.0"
   }
 }
