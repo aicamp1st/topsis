@@ -1,7 +1,9 @@
 <script lang="ts">
   import { page } from '$app/stores'
   import { base } from '$app/paths'
-  import { ClipboardList, LayoutGrid, LayoutDashboard, Trophy, Users } from '@lucide/svelte'
+  import { ClipboardList, LayoutGrid, LayoutDashboard, Trophy, Users, X } from '@lucide/svelte'
+
+  let { open = false, onclose }: { open?: boolean; onclose?: () => void } = $props()
 
   const nav = [
     { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -14,7 +16,11 @@
   const current = $derived(($page.url.pathname.replace(base, '') || '/'))
 </script>
 
-<aside class="fixed inset-y-0 left-0 w-64 flex flex-col z-40 bg-slate-900 text-slate-100">
+<aside
+  class="fixed inset-y-0 left-0 w-64 flex flex-col z-50 bg-slate-900 text-slate-100
+         transition-transform duration-300 ease-out
+         {open ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0"
+>
   <!-- tekstur halus -->
   <div
     class="absolute inset-0 opacity-[0.35] pointer-events-none"
@@ -22,7 +28,7 @@
   ></div>
 
   <!-- Brand -->
-  <div class="relative px-6 pt-7 pb-6">
+  <div class="relative px-6 pt-7 pb-6 flex items-center justify-between">
     <div class="flex items-center gap-3">
       <div class="w-10 h-10 rounded-2xl bg-primary-500 flex items-center justify-center shadow-lg shadow-primary-900/40 rotate-3">
         <span class="font-display font-semibold text-white text-lg leading-none">T</span>
@@ -32,6 +38,14 @@
         <p class="text-slate-400 text-[11px] tracking-wide">Karyawan Terbaik</p>
       </div>
     </div>
+    <!-- Tombol close (mobile) -->
+    <button
+      onclick={() => onclose?.()}
+      class="lg:hidden p-1.5 -mr-1 rounded-lg text-slate-400 hover:bg-white/10 hover:text-white transition-colors"
+      aria-label="Tutup menu"
+    >
+      <X size={18} />
+    </button>
   </div>
 
   <!-- Navigation -->

@@ -97,14 +97,14 @@
 
 <Toast bind:show={showToast} message={toastMsg} type={toastType} />
 
-<div class="p-8">
-  <div class="flex items-center justify-between mb-8">
+<div class="p-4 sm:p-6 lg:p-8 max-w-6xl">
+  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
     <div>
       <span class="eyebrow">Langkah 01</span>
-      <h1 class="text-3xl font-semibold text-slate-900 mt-1.5">Kriteria Penilaian</h1>
+      <h1 class="text-2xl sm:text-3xl font-semibold text-slate-900 mt-1.5">Kriteria Penilaian</h1>
       <p class="text-slate-500 text-sm mt-1.5">Kelola kriteria beserta bobot dan tipe penilaian</p>
     </div>
-    <button onclick={openCreate} class="btn-primary">
+    <button onclick={openCreate} class="btn-primary self-start sm:self-auto">
       <Plus size={16} />
       Tambah Kriteria
     </button>
@@ -140,7 +140,8 @@
         <p class="text-slate-400 text-sm">Belum ada kriteria. Tambah kriteria terlebih dahulu.</p>
       </div>
     {:else}
-      <table class="table-base">
+      <div class="overflow-x-auto">
+      <table class="table-base min-w-[640px]">
         <thead>
           <tr>
             <th class="w-8">#</th>
@@ -188,6 +189,7 @@
           {/each}
         </tbody>
       </table>
+      </div>
     {/if}
   </div>
 </div>

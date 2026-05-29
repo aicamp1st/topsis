@@ -42,11 +42,11 @@
 
 <Toast bind:show={showToast} message="Data penilaian berhasil disimpan" type="success" />
 
-<div class="p-8">
-  <div class="flex items-center justify-between mb-8">
+<div class="p-4 sm:p-6 lg:p-8 max-w-6xl">
+  <div class="mb-6 sm:mb-8">
     <div>
       <span class="eyebrow">Langkah 03</span>
-      <h1 class="text-3xl font-semibold text-slate-900 mt-1.5">Matriks Penilaian</h1>
+      <h1 class="text-2xl sm:text-3xl font-semibold text-slate-900 mt-1.5">Matriks Penilaian</h1>
       <p class="text-slate-500 text-sm mt-1.5">Berikan nilai 1–10 untuk setiap karyawan pada setiap kriteria</p>
     </div>
   </div>
@@ -116,7 +116,7 @@
     </div>
 
     <!-- Legend -->
-    <div class="flex items-center gap-4 mb-4 text-xs text-slate-500">
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4 text-xs text-slate-500">
       <span class="font-medium">Keterangan nilai:</span>
       {#each [['0', 'bg-slate-200', 'Belum diisi'], ['1–3', 'bg-rose-100', 'Kurang'], ['4–5', 'bg-primary-100', 'Cukup'], ['6–7', 'bg-honey-200', 'Baik'], ['8–10', 'bg-olive-200', 'Sangat Baik']] as [range, cls, label]}
         <span class="flex items-center gap-1">

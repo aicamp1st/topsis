@@ -37,10 +37,10 @@
   ]
 </script>
 
-<div class="p-8 max-w-6xl">
-  <div class="mb-8">
+<div class="p-4 sm:p-6 lg:p-8 max-w-6xl">
+  <div class="mb-6 sm:mb-8">
     <span class="eyebrow"><Trophy size={13} /> Hasil Akhir</span>
-    <h1 class="text-4xl font-semibold text-slate-900 mt-2">Peringkat Karyawan</h1>
+    <h1 class="text-3xl sm:text-4xl font-semibold text-slate-900 mt-2">Peringkat Karyawan</h1>
     <p class="text-slate-500 text-sm mt-2 max-w-lg">Peringkat lengkap karyawan terbaik berdasarkan metode TOPSIS, lengkap dengan visualisasi dan rincian perhitungan.</p>
   </div>
 
@@ -54,7 +54,7 @@
     {@const { results, steps, criteriaLabels, candidateLabels } = computed.result}
 
     <!-- Top 3 Podium -->
-    <div class="grid grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 sm:items-start">
       {#each results.slice(0, 3) as r}
         <div
           class="card p-5 text-center relative overflow-hidden transition-transform hover:-translate-y-0.5
@@ -89,7 +89,8 @@
           <h2 class="font-semibold text-slate-900">Tabel Peringkat Lengkap</h2>
         </div>
       </div>
-      <table class="table-base">
+      <div class="overflow-x-auto">
+      <table class="table-base min-w-[720px]">
         <thead>
           <tr>
             <th class="w-12">Rank</th>
@@ -136,6 +137,7 @@
           {/each}
         </tbody>
       </table>
+      </div>
     </div>
 
     <!-- Visualisasi -->

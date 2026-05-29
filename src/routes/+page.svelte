@@ -14,11 +14,11 @@
   ]
 </script>
 
-<div class="p-8 max-w-6xl">
+<div class="p-4 sm:p-6 lg:p-8 max-w-6xl">
   <!-- Hero -->
-  <div class="relative mb-10">
+  <div class="relative mb-8 sm:mb-10">
     <span class="eyebrow"><Sparkles size={13} /> Decision Support System</span>
-    <h1 class="text-[2.6rem] leading-[1.05] font-semibold text-slate-900 mt-3 max-w-2xl">
+    <h1 class="text-3xl sm:text-4xl lg:text-[2.6rem] leading-[1.1] lg:leading-[1.05] font-semibold text-slate-900 mt-3 max-w-2xl">
       Temukan <span class="text-primary-600 italic">karyawan terbaik</span> dengan metode TOPSIS.
     </h1>
     <p class="text-slate-500 mt-4 max-w-xl leading-relaxed">
